@@ -1,36 +1,35 @@
 package com.br.authenticator.service.impl;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
+import com.br.authenticator.enums.UserRole;
+import com.br.authenticator.exception.TokenException;
+import com.br.authenticator.model.RefreshToken;
+import com.br.authenticator.model.User;
+import com.br.authenticator.service.RefreshTokenService;
+import com.br.authenticator.service.TokenService;
+import com.br.authenticator.service.UserService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import com.br.authenticator.enums.UserRole;
-import com.br.authenticator.exception.TokenException;
-import com.br.authenticator.model.User;
-import com.br.authenticator.service.TokenService;
-import com.br.authenticator.service.UserService;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
-
-import lombok.extern.slf4j.Slf4j;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -47,6 +46,9 @@ public class TokenServiceJwtImpl implements TokenService {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private RefreshTokenService refreshTokenService;
 
     @Override
     public String generateToken(UserDetails userDetails) {
@@ -68,11 +70,15 @@ public class TokenServiceJwtImpl implements TokenService {
 
     @Override
     public String generateRefreshToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
         if (userDetails instanceof User user) {
-            claims.put("userId", user.getId());
+            // Criar e persistir o refresh token no banco
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+            
+            // Retorna o token gerado
+            return refreshToken.getToken();
         }
-        return createToken(claims, userDetails.getUsername(), refreshExpiration);
+        
+        return null;
     }
 
     private String createToken(Map<String, Object> claims, String subject, long expiration) {
@@ -109,6 +115,20 @@ public class TokenServiceJwtImpl implements TokenService {
             log.warn("Erro ao extrair usuário do token: {}", e.getMessage());
             return null;
         }
+    }
+
+    public User extractUserFromRefreshToken(String refreshToken) {
+        RefreshToken token = refreshTokenService.findByToken(refreshToken);
+        if (token != null && !token.isRevoked()) {
+            String userId = token.getUserId();
+            try {
+                return userService.findById(userId);
+            } catch (Exception e) {
+                log.error("Erro ao buscar usuário do refresh token: {}", e.getMessage());
+                return null;
+            }
+        }
+        return null;
     }
 
     private Optional<String> getClaimAsString(Claims claims, String claimName) {
@@ -161,12 +181,10 @@ public class TokenServiceJwtImpl implements TokenService {
                     .getBody();
         } catch (ExpiredJwtException e) {
             throw TokenException.expired();
-        } catch (SignatureException e) {
+        } catch (SignatureException | IllegalArgumentException e) {
             throw TokenException.invalid();
         } catch (MalformedJwtException e) {
             throw TokenException.malformed();
-        } catch (UnsupportedJwtException | IllegalArgumentException e) {
-            throw TokenException.invalid();
         }
     }
 
@@ -180,14 +198,22 @@ public class TokenServiceJwtImpl implements TokenService {
             return true;
         } catch (ExpiredJwtException e) {
             throw TokenException.expired();
-        } catch (SignatureException e) {
+        } catch (SignatureException | IllegalArgumentException e) {
             throw TokenException.invalid();
         } catch (MalformedJwtException e) {
             throw TokenException.malformed();
-        } catch (UnsupportedJwtException | IllegalArgumentException e) {
-            throw TokenException.invalid();
         } catch (Exception e) {
             return false;
         }
+    }
+    
+    /**
+     * Valida um refresh token verificando no banco de dados
+     * 
+     * @param token O refresh token
+     * @return true se válido, false caso contrário
+     */
+    public boolean validateRefreshToken(String token) {
+        return refreshTokenService.validateRefreshToken(token);
     }
 }

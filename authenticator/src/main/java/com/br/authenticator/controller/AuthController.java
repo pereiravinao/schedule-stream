@@ -15,6 +15,7 @@ import com.br.authenticator.dto.UserTokenDTO;
 import com.br.authenticator.dto.parameter.AuthParameter;
 import com.br.authenticator.dto.parameter.UserCreateParameter;
 import com.br.authenticator.service.AuthService;
+import com.br.authenticator.service.RefreshTokenService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,6 +26,9 @@ public class AuthController {
 
     @Autowired
     AuthService authService;
+    
+    @Autowired
+    RefreshTokenService refreshTokenService;
 
     private static final int COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // 7 dias em segundos
     private static final String TOKEN_COOKIE_NAME = "auth_token";
@@ -79,11 +83,9 @@ public class AuthController {
             @CookieValue(value = REFRESH_TOKEN_COOKIE_NAME, required = false) String cookieRefreshToken) {
 
         if (cookieRefreshToken == null) {
-            log.warn("Tentativa de refresh de token sem fornecer o refresh token");
             throw new IllegalArgumentException("Refresh token não fornecido");
         }
 
-        log.debug("Iniciando renovação de token com refresh token");
         UserTokenDTO userToken = authService.refreshToken(cookieRefreshToken);
 
         HttpHeaders headers = new HttpHeaders();
@@ -91,9 +93,29 @@ public class AuthController {
         headers.add(HttpHeaders.SET_COOKIE, createRefreshTokenCookie(userToken.getRefreshToken()).toString());
 
         UserResponse response = userToken.toResponse();
-        log.info("Token renovado para o usuário {}", response.getUsername());
+        log.info("Token renovado com sucesso para o usuário: {}", userToken.getUsername());
 
         return ResponseEntity.ok().headers(headers).body(response);
+    }
+    
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+            @CookieValue(value = REFRESH_TOKEN_COOKIE_NAME, required = false) String cookieRefreshToken) {
+        
+        // Revogar o refresh token no banco
+        if (cookieRefreshToken != null) {
+            refreshTokenService.revokeRefreshToken(cookieRefreshToken);
+            log.info("Refresh token revogado durante logout");
+        }
+        
+        // Limpar os cookies
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, createExpiredCookie(TOKEN_COOKIE_NAME).toString());
+        headers.add(HttpHeaders.SET_COOKIE, createExpiredCookie(REFRESH_TOKEN_COOKIE_NAME).toString());
+        
+        log.info("Logout realizado com sucesso");
+        
+        return ResponseEntity.ok().headers(headers).build();
     }
 
     private ResponseCookie createTokenCookie(String token) {
@@ -113,6 +135,17 @@ public class AuthController {
                 .secure(true)
                 .path("/")
                 .maxAge(COOKIE_MAX_AGE)
+                .sameSite("Strict")
+                .build();
+        return cookie;
+    }
+    
+    private ResponseCookie createExpiredCookie(String name) {
+        ResponseCookie cookie = ResponseCookie.from(name, "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0) // Define o cookie para expirar imediatamente
                 .sameSite("Strict")
                 .build();
         return cookie;

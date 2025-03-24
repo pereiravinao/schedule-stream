@@ -23,6 +23,13 @@ public class UserServiceBaseImpl implements UserService {
     }
 
     @Override
+    public User findById(String id) {
+        return userRepository.findById(id)
+                .map(UserEntity::toModel)
+                .orElseThrow(() -> UserException.userNotFoundById(id));
+    }
+
+    @Override
     public User save(User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw UserException.duplicateUsername(user.getEmail());
