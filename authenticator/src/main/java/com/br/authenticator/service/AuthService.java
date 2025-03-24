@@ -2,12 +2,13 @@ package com.br.authenticator.service;
 
 import com.br.authenticator.dto.UserTokenDTO;
 import com.br.authenticator.dto.parameter.UserCreateParameter;
-import com.br.authenticator.model.User;
 
 public interface AuthService {
     UserTokenDTO login(String username, String password);
 
-    User register(UserCreateParameter userCreateParameter);
+    UserTokenDTO register(UserCreateParameter userCreateParameter);
 
-    User refreshToken(String refreshToken);
+    UserTokenDTO refreshToken(String refreshToken);
+    
+    UserTokenDTO validateToken(String token);
 }

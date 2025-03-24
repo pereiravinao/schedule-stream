@@ -1,10 +1,8 @@
 package com.br.authenticator.service;
 
-import java.util.function.Function;
-
 import org.springframework.security.core.userdetails.UserDetails;
 
-import io.jsonwebtoken.Claims;
+import com.br.authenticator.model.User;
 
 public interface TokenService {
 
@@ -14,8 +12,6 @@ public interface TokenService {
 
     public boolean validateToken(String token);
 
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver);
-
-    public String extractUsername(String token);
+    public User extractUser(String token);
 
 }

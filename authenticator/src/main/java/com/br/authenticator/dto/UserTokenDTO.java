@@ -35,4 +35,13 @@ public class UserTokenDTO {
         this.roles = user.getRoles();
         this.email = user.getEmail();
     }
-}
+    
+    public UserResponse toResponse() {
+        UserResponse response = new UserResponse();
+        response.setUsername(username);
+        response.setEmail(email);
+        response.setPhoneNumber(phoneNumber);
+        response.setRoles(roles);
+        return response;
+    }
+} 
