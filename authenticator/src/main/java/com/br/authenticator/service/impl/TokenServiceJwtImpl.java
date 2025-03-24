@@ -1,5 +1,20 @@
 package com.br.authenticator.service.impl;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+
 import com.br.authenticator.enums.UserRole;
 import com.br.authenticator.exception.TokenException;
 import com.br.authenticator.model.RefreshToken;
@@ -7,29 +22,14 @@ import com.br.authenticator.model.User;
 import com.br.authenticator.service.RefreshTokenService;
 import com.br.authenticator.service.TokenService;
 import com.br.authenticator.service.UserService;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -46,7 +46,7 @@ public class TokenServiceJwtImpl implements TokenService {
 
     @Autowired
     private UserService userService;
-    
+
     @Autowired
     private RefreshTokenService refreshTokenService;
 
@@ -71,13 +71,11 @@ public class TokenServiceJwtImpl implements TokenService {
     @Override
     public String generateRefreshToken(UserDetails userDetails) {
         if (userDetails instanceof User user) {
-            // Criar e persistir o refresh token no banco
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
-            
-            // Retorna o token gerado
+
             return refreshToken.getToken();
         }
-        
+
         return null;
     }
 
@@ -206,13 +204,7 @@ public class TokenServiceJwtImpl implements TokenService {
             return false;
         }
     }
-    
-    /**
-     * Valida um refresh token verificando no banco de dados
-     * 
-     * @param token O refresh token
-     * @return true se válido, false caso contrário
-     */
+
     public boolean validateRefreshToken(String token) {
         return refreshTokenService.validateRefreshToken(token);
     }

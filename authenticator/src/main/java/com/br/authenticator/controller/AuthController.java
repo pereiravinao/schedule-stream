@@ -20,7 +20,7 @@ import com.br.authenticator.service.RefreshTokenService;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/v1/auth")
 @Slf4j
 public class AuthController {
 
@@ -102,13 +102,11 @@ public class AuthController {
     public ResponseEntity<Void> logout(
             @CookieValue(value = REFRESH_TOKEN_COOKIE_NAME, required = false) String cookieRefreshToken) {
         
-        // Revogar o refresh token no banco
         if (cookieRefreshToken != null) {
             refreshTokenService.revokeRefreshToken(cookieRefreshToken);
             log.info("Refresh token revogado durante logout");
         }
         
-        // Limpar os cookies
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, createExpiredCookie(TOKEN_COOKIE_NAME).toString());
         headers.add(HttpHeaders.SET_COOKIE, createExpiredCookie(REFRESH_TOKEN_COOKIE_NAME).toString());
@@ -145,7 +143,7 @@ public class AuthController {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .maxAge(0) // Define o cookie para expirar imediatamente
+                .maxAge(0)
                 .sameSite("Strict")
                 .build();
         return cookie;
