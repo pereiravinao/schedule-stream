@@ -1,10 +1,16 @@
 package com.br.authenticator.service.impl;
 
+import com.br.authenticator.exception.TokenException;
 import com.br.authenticator.model.User;
 import com.br.authenticator.service.TokenService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -54,7 +60,11 @@ public class TokenServiceJwtImpl implements TokenService {
 
     @Override
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        try {
+            return extractClaim(token, Claims::getSubject);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
@@ -64,11 +74,21 @@ public class TokenServiceJwtImpl implements TokenService {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8)))
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8)))
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            throw TokenException.expired();
+        } catch (SignatureException e) {
+            throw TokenException.invalid();
+        } catch (MalformedJwtException e) {
+            throw TokenException.malformed();
+        } catch (UnsupportedJwtException | IllegalArgumentException e) {
+            throw TokenException.invalid();
+        }
     }
 
     @Override
@@ -79,6 +99,14 @@ public class TokenServiceJwtImpl implements TokenService {
                 .build()
                 .parseClaimsJws(token);
             return true;
+        } catch (ExpiredJwtException e) {
+            throw TokenException.expired();
+        } catch (SignatureException e) {
+            throw TokenException.invalid();
+        } catch (MalformedJwtException e) {
+            throw TokenException.malformed();
+        } catch (UnsupportedJwtException | IllegalArgumentException e) {
+            throw TokenException.invalid();
         } catch (Exception e) {
             return false;
         }

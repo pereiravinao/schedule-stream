@@ -2,6 +2,7 @@ package com.br.authenticator.service.impl;
 
 import com.br.authenticator.dto.UserTokenDTO;
 import com.br.authenticator.dto.parameter.UserCreateParameter;
+import com.br.authenticator.exception.AuthenticationException;
 import com.br.authenticator.model.User;
 import com.br.authenticator.service.AuthService;
 import com.br.authenticator.service.TokenService;
@@ -27,7 +28,7 @@ public class AuthServiceImpl implements AuthService {
             userToken.setRefreshToken(tokenService.generateRefreshToken(user));
             return userToken;
         }
-        throw new RuntimeException("Username or Password is incorrect");
+        throw AuthenticationException.invalidCredentials();
     }
 
     @Override
@@ -43,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
         if (username != null && tokenService.validateToken(refreshToken)) {
             return userService.findByUsername(username);
         }
-        throw new RuntimeException("Invalid refresh token");
+        throw AuthenticationException.invalidRefreshToken();
     }
 
     private boolean isPasswordMatch(String password, String encodedPassword) {
