@@ -26,7 +26,7 @@ public class AuthController {
 
     @Autowired
     AuthService authService;
-    
+
     @Autowired
     RefreshTokenService refreshTokenService;
 
@@ -43,7 +43,6 @@ public class AuthController {
         headers.add(HttpHeaders.SET_COOKIE, createRefreshTokenCookie(userToken.getRefreshToken()).toString());
 
         UserResponse response = userToken.toResponse();
-        log.info("Usuário {} autenticado com sucesso", userToken.getUsername());
 
         return ResponseEntity.ok().headers(headers).body(response);
     }
@@ -57,26 +56,24 @@ public class AuthController {
         headers.add(HttpHeaders.SET_COOKIE, createRefreshTokenCookie(userToken.getRefreshToken()).toString());
 
         UserResponse response = userToken.toResponse();
-        log.info("Usuário {} registrado com sucesso", userToken.getUsername());
 
         return ResponseEntity.ok().headers(headers).body(response);
     }
 
-    @PostMapping("/validate")
-    public ResponseEntity<UserResponse> validateToken(
-            @CookieValue(value = TOKEN_COOKIE_NAME, required = false) String cookieToken) {
-
-        if (cookieToken == null) {
-            log.warn("Tentativa de validação de token sem fornecer o token");
-            throw new IllegalArgumentException("Token não fornecido");
-        }
-
-        UserTokenDTO userToken = authService.validateToken(cookieToken);
-        UserResponse response = userToken.toResponse();
-        log.debug("Token validado para o usuário {}", response.getUsername());
-
-        return ResponseEntity.ok(response);
-    }
+//    @PostMapping("/validate")
+//    public ResponseEntity<UserResponse> validateToken(
+//            @CookieValue(value = TOKEN_COOKIE_NAME, required = false) String cookieToken) {
+//
+//        if (cookieToken == null) {
+//            throw new IllegalArgumentException("Token não fornecido");
+//        }
+//
+//        UserTokenDTO userToken = authService.validateToken(cookieToken);
+//        UserResponse response = userToken.toResponse();
+//        log.debug("Token validado para o usuário {}", response.getUsername());
+//
+//        return ResponseEntity.ok(response);
+//    }
 
     @PostMapping("/refresh")
     public ResponseEntity<UserResponse> refreshToken(
@@ -93,26 +90,22 @@ public class AuthController {
         headers.add(HttpHeaders.SET_COOKIE, createRefreshTokenCookie(userToken.getRefreshToken()).toString());
 
         UserResponse response = userToken.toResponse();
-        log.info("Token renovado com sucesso para o usuário: {}", userToken.getUsername());
 
         return ResponseEntity.ok().headers(headers).body(response);
     }
-    
+
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
             @CookieValue(value = REFRESH_TOKEN_COOKIE_NAME, required = false) String cookieRefreshToken) {
-        
+
         if (cookieRefreshToken != null) {
             refreshTokenService.revokeRefreshToken(cookieRefreshToken);
-            log.info("Refresh token revogado durante logout");
         }
-        
+
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.SET_COOKIE, createExpiredCookie(TOKEN_COOKIE_NAME).toString());
         headers.add(HttpHeaders.SET_COOKIE, createExpiredCookie(REFRESH_TOKEN_COOKIE_NAME).toString());
-        
-        log.info("Logout realizado com sucesso");
-        
+
         return ResponseEntity.ok().headers(headers).build();
     }
 
@@ -137,7 +130,7 @@ public class AuthController {
                 .build();
         return cookie;
     }
-    
+
     private ResponseCookie createExpiredCookie(String name) {
         ResponseCookie cookie = ResponseCookie.from(name, "")
                 .httpOnly(true)

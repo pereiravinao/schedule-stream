@@ -1,28 +1,27 @@
 package com.br.authenticator.service.impl;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.br.authenticator.dto.UserTokenDTO;
 import com.br.authenticator.dto.parameter.UserCreateParameter;
 import com.br.authenticator.enums.UserRole;
 import com.br.authenticator.exception.AuthenticationException;
+import com.br.authenticator.grpc.AuthServiceGrpc;
 import com.br.authenticator.model.User;
 import com.br.authenticator.service.AuthService;
 import com.br.authenticator.service.RefreshTokenService;
 import com.br.authenticator.service.TokenService;
 import com.br.authenticator.service.UserService;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
 @Slf4j
-public class AuthServiceImpl implements AuthService {
+public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase implements AuthService {
 
     private final TokenService tokenService;
     private final UserService userService;
@@ -89,13 +88,13 @@ public class AuthServiceImpl implements AuthService {
             log.info("Refresh token revogado durante processo de renovação: {}", refreshToken);
 
             user = userService.findById(user.getId());
-            
+
             UserTokenDTO userToken = new UserTokenDTO(user);
             userToken.setToken(tokenService.generateToken(user));
 
             String newRefreshToken = tokenService.generateRefreshToken(user);
             userToken.setRefreshToken(newRefreshToken);
-            
+
             log.info("Novos tokens gerados para o usuário: {}", user.getUsername());
             return userToken;
         } catch (Exception e) {
@@ -124,4 +123,5 @@ public class AuthServiceImpl implements AuthService {
     private boolean isPasswordMatch(String password, String encodedPassword) {
         return passwordEncoder.matches(password, encodedPassword);
     }
+
 }

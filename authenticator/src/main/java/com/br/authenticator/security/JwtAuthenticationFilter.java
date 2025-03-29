@@ -48,8 +48,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Collection<GrantedAuthority> authorities = Collections.emptyList();
                 if (user.getRoles() != null) {
                     authorities = user.getRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority(role.toString()))
-                        .collect(Collectors.toList());
+                            .map(role -> new SimpleGrantedAuthority(role.toString()))
+                            .collect(Collectors.toList());
                 }
 
                 var authToken = new UsernamePasswordAuthenticationToken(user, null, authorities);
