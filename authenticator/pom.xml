@@ -124,7 +124,7 @@
             <artifactId>grpc-stub</artifactId>
             <version>${grpc.version}</version>
         </dependency>
-<!--        &lt;!&ndash; logback &ndash;&gt;-->
+        <!--        &lt;!&ndash; logback &ndash;&gt;-->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>

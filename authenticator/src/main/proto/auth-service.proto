@@ -9,6 +9,7 @@ package auth;
 // Serviço gRPC
 service AuthService {
   rpc ValidateToken (TokenRequest) returns (UserResponse);
+  rpc RefreshToken (TokenRequest) returns (UserResponse);
 }
 
 // Mensagem de requisição

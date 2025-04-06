@@ -39,10 +39,8 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase impleme
             String refreshTokenValue = tokenService.generateRefreshToken(user);
             userToken.setRefreshToken(refreshTokenValue);
 
-            log.info("Login bem-sucedido para o usuário: {}", username);
             return userToken;
         }
-        log.warn("Tentativa de login com credenciais inválidas para usuário: {}", username);
         throw AuthenticationException.invalidCredentials();
     }
 
@@ -66,7 +64,6 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase impleme
         String refreshTokenValue = tokenService.generateRefreshToken(savedUser);
         userToken.setRefreshToken(refreshTokenValue);
 
-        log.info("Usuário registrado com sucesso: {}", savedUser.getUsername());
         return userToken;
     }
 
@@ -74,18 +71,15 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase impleme
     public UserTokenDTO refreshToken(String refreshToken) {
         try {
             if (!((TokenServiceJwtImpl) tokenService).validateRefreshToken(refreshToken)) {
-                log.warn("Tentativa de refresh com token inválido ou expirado");
                 throw AuthenticationException.invalidRefreshToken();
             }
 
             User user = ((TokenServiceJwtImpl) tokenService).extractUserFromRefreshToken(refreshToken);
             if (user == null) {
-                log.warn("Usuário não encontrado para o refresh token fornecido");
                 throw AuthenticationException.invalidRefreshToken();
             }
 
             refreshTokenService.revokeRefreshToken(refreshToken);
-            log.info("Refresh token revogado durante processo de renovação: {}", refreshToken);
 
             user = userService.findById(user.getId());
 
@@ -95,10 +89,8 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase impleme
             String newRefreshToken = tokenService.generateRefreshToken(user);
             userToken.setRefreshToken(newRefreshToken);
 
-            log.info("Novos tokens gerados para o usuário: {}", user.getUsername());
             return userToken;
         } catch (Exception e) {
-            log.error("Erro ao renovar token: {}", e.getMessage());
             throw AuthenticationException.invalidRefreshToken();
         }
     }
@@ -115,7 +107,6 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase impleme
             }
             throw AuthenticationException.invalidToken();
         } catch (Exception e) {
-            log.error("Erro ao validar token: {}", e.getMessage());
             throw AuthenticationException.invalidToken();
         }
     }
