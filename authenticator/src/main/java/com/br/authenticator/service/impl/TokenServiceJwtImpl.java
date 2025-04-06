@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import com.br.authenticator.enums.UserRole;
+import com.br.authcommon.enums.UserRole;
 import com.br.authenticator.exception.TokenException;
 import com.br.authenticator.model.RefreshToken;
 import com.br.authenticator.model.User;

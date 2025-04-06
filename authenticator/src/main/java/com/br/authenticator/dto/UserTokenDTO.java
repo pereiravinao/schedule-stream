@@ -1,11 +1,12 @@
 package com.br.authenticator.dto;
 
-import com.br.authenticator.enums.UserRole;
+import java.util.Set;
+
+import com.br.authcommon.enums.UserRole;
 import com.br.authenticator.model.User;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Set;
 
 @Getter
 @Setter
@@ -35,7 +36,7 @@ public class UserTokenDTO {
         this.roles = user.getRoles();
         this.email = user.getEmail();
     }
-    
+
     public UserResponse toResponse() {
         UserResponse response = new UserResponse();
         response.setUsername(username);
@@ -44,4 +45,4 @@ public class UserTokenDTO {
         response.setRoles(roles);
         return response;
     }
-} 
+}

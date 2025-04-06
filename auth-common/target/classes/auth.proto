@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.br.authcommon.grpc";
+option java_outer_classname = "AuthServiceProto";
+
+package authcommon;
+
+// Serviço gRPC
+service AuthService {
+    rpc ValidateToken (TokenRequest) returns (UserResponse);
+    rpc RefreshToken (TokenRequest) returns (UserResponse);
+}
+
+// Mensagem de requisição
+message TokenRequest {
+    string token = 1;
+}
+
+// Mensagem de resposta
+message UserResponse {
+    string username = 1;
+    string email = 2;
+    string phone_number = 3;
+    repeated string roles = 4;
+}

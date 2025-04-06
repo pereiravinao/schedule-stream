@@ -1,22 +1,25 @@
 package com.br.authenticator.service.impl;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.br.authcommon.enums.UserRole;
 import com.br.authenticator.dto.UserTokenDTO;
 import com.br.authenticator.dto.parameter.UserCreateParameter;
-import com.br.authenticator.enums.UserRole;
 import com.br.authenticator.exception.AuthenticationException;
-import com.br.authenticator.grpc.AuthServiceGrpc;
 import com.br.authenticator.model.User;
 import com.br.authenticator.service.AuthService;
 import com.br.authenticator.service.RefreshTokenService;
 import com.br.authenticator.service.TokenService;
 import com.br.authenticator.service.UserService;
+
+import com.br.authcommon.grpc.AuthServiceGrpc;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Service
 @AllArgsConstructor

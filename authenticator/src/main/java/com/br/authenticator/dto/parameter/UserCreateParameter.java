@@ -3,8 +3,9 @@ package com.br.authenticator.dto.parameter;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.br.authenticator.enums.UserRole;
+import com.br.authcommon.enums.UserRole;
 import com.br.authenticator.model.User;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,7 +26,7 @@ public class UserCreateParameter {
         model.setEmail(email);
         model.setPhoneNumber(phoneNumber);
         model.setName(name);
-        
+
         // Definir roles padrão se não fornecidas
         if (roles == null || roles.isEmpty()) {
             Set<UserRole> defaultRoles = new HashSet<>();
@@ -34,7 +35,7 @@ public class UserCreateParameter {
         } else {
             model.setRoles(roles);
         }
-        
+
         return model;
     }
 

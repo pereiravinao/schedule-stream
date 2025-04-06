@@ -1,12 +1,13 @@
 package com.br.authenticator.dto.presenter;
 
-import com.br.authenticator.enums.UserRole;
-import com.br.authenticator.model.User;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.LocalDateTime;
 import java.util.Set;
+
+import com.br.authcommon.enums.UserRole;
+import com.br.authenticator.model.User;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter

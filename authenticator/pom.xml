@@ -28,11 +28,8 @@
     </scm>
     <properties>
         <java.version>21</java.version>
-        <grpc.version>1.68.1</grpc.version>
-        <protoc.version>3.25.1</protoc.version>
-        <logback.version>1.5.12</logback.version>
+
         <jackson.version>2.17.2</jackson.version>
-        <protobuf.maven.plugin.version>0.6.1</protobuf.maven.plugin.version>
         <tomcat.annotations.version>6.0.53</tomcat.annotations.version>
     </properties>
     <dependencies>
@@ -59,12 +56,7 @@
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.36</version>
-            <scope>provided</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -108,22 +100,6 @@
             <version>${tomcat.annotations.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!-- grpc / proto related dependencies -->
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-netty-shaded</artifactId>
-            <version>${grpc.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-protobuf</artifactId>
-            <version>${grpc.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-stub</artifactId>
-            <version>${grpc.version}</version>
-        </dependency>
         <!--        &lt;!&ndash; logback &ndash;&gt;-->
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -134,6 +110,20 @@
             <groupId>net.devh</groupId>
             <artifactId>grpc-server-spring-boot-starter</artifactId>
             <version>3.1.0.RELEASE</version>
+        </dependency>
+        
+        <!-- auth-common dependency -->
+        <dependency>
+            <groupId>com.br</groupId>
+            <artifactId>auth-common</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.36</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -149,15 +139,18 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
                 <configuration>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
+                            <version>1.18.30</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+            <!-- Plugin para compilar spring boot -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -170,31 +163,7 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.xolstice.maven.plugins</groupId>
-                <artifactId>protobuf-maven-plugin</artifactId>
-                <version>${protobuf.maven.plugin.version}</version>
-                <configuration>
-                    <protocArtifact>com.google.protobuf:protoc:${protoc.version}:exe:${os.detected.classifier}
-                    </protocArtifact>
-                    <pluginId>grpc-java</pluginId>
-                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}
-                    </pluginArtifact>
-                    <protoSourceRoot>
-                        ${basedir}/src/main/proto/
-                    </protoSourceRoot>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>compile-custom</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
-
     </build>
 
 </project>

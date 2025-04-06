@@ -1,11 +1,12 @@
 package com.br.authenticator.dto;
 
-import com.br.authenticator.enums.UserRole;
+import java.util.Set;
+
+import com.br.authcommon.enums.UserRole;
 import com.br.authenticator.model.User;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Set;
 
 @Getter
 @Setter

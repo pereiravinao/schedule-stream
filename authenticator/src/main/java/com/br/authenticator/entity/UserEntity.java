@@ -1,15 +1,17 @@
 package com.br.authenticator.entity;
 
-import com.br.authenticator.enums.UserRole;
-import com.br.authenticator.model.User;
-import lombok.Getter;
-import lombok.Setter;
+import java.time.LocalDateTime;
+import java.util.Set;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.time.LocalDateTime;
-import java.util.Set;
+import com.br.authcommon.enums.UserRole;
+import com.br.authenticator.model.User;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -41,7 +43,6 @@ public class UserEntity {
 
     @Field("updatedAt")
     private String updatedAt;
-
 
     public UserEntity() {
     }

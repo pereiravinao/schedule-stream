@@ -1,12 +1,5 @@
 package com.br.authenticator.controller;
 
-import com.br.authenticator.dto.UserResponse;
-import com.br.authenticator.dto.UserTokenDTO;
-import com.br.authenticator.dto.parameter.AuthParameter;
-import com.br.authenticator.dto.parameter.UserCreateParameter;
-import com.br.authenticator.service.AuthService;
-import com.br.authenticator.service.RefreshTokenService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -16,6 +9,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.br.authenticator.dto.UserResponse;
+import com.br.authenticator.dto.UserTokenDTO;
+import com.br.authenticator.dto.parameter.AuthParameter;
+import com.br.authenticator.dto.parameter.UserCreateParameter;
+import com.br.authenticator.service.AuthService;
+import com.br.authenticator.service.RefreshTokenService;
+
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/v1/auth")

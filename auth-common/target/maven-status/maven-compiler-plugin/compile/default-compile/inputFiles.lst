@@ -1,0 +1,10 @@
+c:\Users\vinicius.norberto_hu\Projetos\Nova pasta\schedule-stream\auth-common\src\main\java\com\br\authcommon\config\GrpcClientConfig.java
+c:\Users\vinicius.norberto_hu\Projetos\Nova pasta\schedule-stream\auth-common\src\main\java\com\br\authcommon\enums\UserRole.java
+c:\Users\vinicius.norberto_hu\Projetos\Nova pasta\schedule-stream\auth-common\src\main\java\com\br\authcommon\model\User.java
+c:\Users\vinicius.norberto_hu\Projetos\Nova pasta\schedule-stream\auth-common\src\main\java\com\br\authcommon\service\AuthGrpcClientService.java
+c:\Users\vinicius.norberto_hu\Projetos\Nova pasta\schedule-stream\auth-common\target\generated-sources\protobuf\java\com\br\authcommon\grpc\AuthServiceGrpc.java
+c:\Users\vinicius.norberto_hu\Projetos\Nova pasta\schedule-stream\auth-common\target\generated-sources\protobuf\java\com\br\authcommon\grpc\AuthServiceProto.java
+c:\Users\vinicius.norberto_hu\Projetos\Nova pasta\schedule-stream\auth-common\target\generated-sources\protobuf\java\com\br\authcommon\grpc\TokenRequest.java
+c:\Users\vinicius.norberto_hu\Projetos\Nova pasta\schedule-stream\auth-common\target\generated-sources\protobuf\java\com\br\authcommon\grpc\TokenRequestOrBuilder.java
+c:\Users\vinicius.norberto_hu\Projetos\Nova pasta\schedule-stream\auth-common\target\generated-sources\protobuf\java\com\br\authcommon\grpc\UserResponse.java
+c:\Users\vinicius.norberto_hu\Projetos\Nova pasta\schedule-stream\auth-common\target\generated-sources\protobuf\java\com\br\authcommon\grpc\UserResponseOrBuilder.java
