@@ -6,6 +6,7 @@ import com.br.authcommon.exceptions.UnauthorizedException;
 import com.br.authcommon.grpc.AuthServiceGrpc;
 import com.br.authcommon.grpc.TokenRequest;
 import com.br.authcommon.grpc.UserResponse;
+import com.br.authcommon.utils.SecurityUtils;
 
 import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +22,11 @@ public class AuthGrpcClientService {
             TokenRequest request = TokenRequest.newBuilder()
                     .setToken(token)
                     .build();
-            return blockingStub.validateToken(request);
+            UserResponse userResponse = blockingStub.validateToken(request);
+            SecurityUtils.setUser(userResponse);
+            return userResponse;
         } catch (StatusRuntimeException e) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException(e.getMessage());
         }
     }
 
@@ -31,6 +34,8 @@ public class AuthGrpcClientService {
         TokenRequest request = TokenRequest.newBuilder()
                 .setToken(refreshToken)
                 .build();
-        return blockingStub.refreshToken(request);
+        UserResponse userResponse = blockingStub.refreshToken(request);
+        SecurityUtils.setUser(userResponse);
+        return userResponse;
     }
 }

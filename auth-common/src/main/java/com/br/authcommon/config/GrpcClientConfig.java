@@ -27,23 +27,23 @@ public class GrpcClientConfig {
                 .enableRetry()
                 .maxRetryAttempts(3)
                 .retryBufferSize(16777216) // 16MB
-                .keepAliveWithoutCalls(false)
-                .keepAliveTime(60, TimeUnit.SECONDS)
-                .keepAliveTimeout(20, TimeUnit.SECONDS)
+                .keepAliveWithoutCalls(true)
+                .keepAliveTime(30, TimeUnit.SECONDS)
+                .keepAliveTimeout(10, TimeUnit.SECONDS)
                 .build();
     }
 
     @Bean
     public AuthServiceGrpc.AuthServiceBlockingStub authServiceBlockingStub(ManagedChannel channel) {
         return AuthServiceGrpc.newBlockingStub(channel)
-                .withDeadlineAfter(30, TimeUnit.SECONDS)
+                .withDeadlineAfter(60, TimeUnit.SECONDS)
                 .withWaitForReady();
     }
 
     @Bean
     public AuthServiceGrpc.AuthServiceStub authServiceStub(ManagedChannel channel) {
         return AuthServiceGrpc.newStub(channel)
-                .withDeadlineAfter(30, TimeUnit.SECONDS)
+                .withDeadlineAfter(60, TimeUnit.SECONDS)
                 .withWaitForReady();
     }
 }
