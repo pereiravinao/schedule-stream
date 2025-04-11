@@ -29,6 +29,7 @@ public class RefreshTokenEntity {
     @Indexed
     private String userId;
     
+    @Indexed(expireAfterSeconds = 0)
     private Instant expiryDate;
     
     private boolean revoked;

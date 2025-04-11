@@ -5,6 +5,7 @@ import com.br.authcommon.grpc.TokenRequest;
 import com.br.authcommon.grpc.UserResponse;
 
 import com.br.authenticator.dto.UserTokenDTO;
+import com.br.authenticator.exception.grpc.GrpcUnauthenticatedException;
 import com.br.authenticator.service.AuthService;
 
 import io.grpc.stub.StreamObserver;
@@ -23,6 +24,9 @@ public class AuthServiceGrpcImpl extends AuthServiceGrpc.AuthServiceImplBase {
     public void validateToken(TokenRequest request, StreamObserver<UserResponse> responseObserver) {
         String token = request.getToken();
         UserTokenDTO userResponse = this.authService.validateToken(token);
+        if (userResponse == null) {
+            throw new GrpcUnauthenticatedException("Token inválido ou expirado");
+        }
         UserResponse response = buildUserResponse(userResponse);
 
         responseObserver.onNext(response);
@@ -33,6 +37,9 @@ public class AuthServiceGrpcImpl extends AuthServiceGrpc.AuthServiceImplBase {
     public void refreshToken(TokenRequest request, StreamObserver<UserResponse> responseObserver) {
         String refreshToken = request.getToken();
         UserTokenDTO userResponse = this.authService.refreshToken(refreshToken);
+        if (userResponse == null) {
+            throw new GrpcUnauthenticatedException("Token de atualização inválido ou expirado");
+        }
         UserResponse response = buildUserResponse(userResponse);
 
         responseObserver.onNext(response);

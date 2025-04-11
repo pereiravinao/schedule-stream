@@ -10,6 +10,7 @@ import com.br.authcommon.enums.UserRole;
 import com.br.authenticator.dto.UserTokenDTO;
 import com.br.authenticator.dto.parameter.UserCreateParameter;
 import com.br.authenticator.exception.AuthenticationException;
+import com.br.authenticator.exception.grpc.GrpcUnauthenticatedException;
 import com.br.authenticator.model.User;
 import com.br.authenticator.service.AuthService;
 import com.br.authenticator.service.RefreshTokenService;
@@ -74,12 +75,12 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase impleme
     public UserTokenDTO refreshToken(String refreshToken) {
         try {
             if (!((TokenServiceJwtImpl) tokenService).validateRefreshToken(refreshToken)) {
-                throw AuthenticationException.invalidRefreshToken();
+                throw new GrpcUnauthenticatedException("Token de atualização inválido ou expirado");
             }
 
             User user = ((TokenServiceJwtImpl) tokenService).extractUserFromRefreshToken(refreshToken);
             if (user == null) {
-                throw AuthenticationException.invalidRefreshToken();
+                throw new GrpcUnauthenticatedException("Token de atualização inválido ou expirado");
             }
 
             refreshTokenService.revokeRefreshToken(refreshToken);
@@ -94,7 +95,7 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase impleme
 
             return userToken;
         } catch (Exception e) {
-            throw AuthenticationException.invalidRefreshToken();
+            throw new GrpcUnauthenticatedException("Token de atualização inválido ou expirado");
         }
     }
 
@@ -108,9 +109,9 @@ public class AuthServiceImpl extends AuthServiceGrpc.AuthServiceImplBase impleme
                     return new UserTokenDTO(user);
                 }
             }
-            throw AuthenticationException.invalidToken();
+            throw new GrpcUnauthenticatedException("Token inválido ou expirado");
         } catch (Exception e) {
-            throw AuthenticationException.invalidToken();
+            throw new GrpcUnauthenticatedException("Token inválido ou expirado");
         }
     }
 

@@ -28,25 +28,29 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     
     @Override
     public RefreshToken createRefreshToken(User user) {
+        // Revoke all existing tokens for this user
         List<RefreshTokenEntity> existingTokens = refreshTokenRepository.findByUserId(user.getId());
         if (!existingTokens.isEmpty()) {
-            log.info("Encontrados {} tokens antigos para o usuário: {}", existingTokens.size(), user.getUsername());
+            log.info("Revogando {} tokens existentes para o usuário: {}", existingTokens.size(), user.getUsername());
             existingTokens.forEach(token -> {
                 token.setRevoked(true);
                 refreshTokenRepository.save(token);
-                log.info("Token antigo revogado: {}", token.getToken());
             });
         }
+        
+        // Calculate expiry date (7 days from now)
+        Instant expiryDate = Instant.now().plusMillis(refreshTokenDurationMs);
         
         RefreshToken refreshToken = RefreshToken.builder()
                 .userId(user.getId())
                 .token(java.util.UUID.randomUUID().toString())
-                .expiryDate(Instant.now().plusMillis(refreshTokenDurationMs))
+                .expiryDate(expiryDate)
                 .revoked(false)
                 .build();
         
         RefreshTokenEntity savedEntity = refreshTokenRepository.save(new RefreshTokenEntity(refreshToken));
-        log.info("Novo refresh token criado para usuário: {}", user.getUsername());
+        log.info("Novo refresh token criado para usuário: {} com expiração em: {}", 
+                user.getUsername(), expiryDate);
         
         return savedEntity.toModel();
     }

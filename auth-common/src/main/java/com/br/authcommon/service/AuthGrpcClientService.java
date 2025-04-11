@@ -1,12 +1,14 @@
 package com.br.authcommon.service;
 
+import org.springframework.stereotype.Service;
+
+import com.br.authcommon.exceptions.UnauthorizedException;
 import com.br.authcommon.grpc.AuthServiceGrpc;
 import com.br.authcommon.grpc.TokenRequest;
 import com.br.authcommon.grpc.UserResponse;
 
 import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +23,7 @@ public class AuthGrpcClientService {
                     .build();
             return blockingStub.validateToken(request);
         } catch (StatusRuntimeException e) {
-            throw new RuntimeException("Erro ao validar token: " + e.getMessage());
+            throw new UnauthorizedException();
         }
     }
 

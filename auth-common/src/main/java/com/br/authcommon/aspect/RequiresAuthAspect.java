@@ -66,14 +66,11 @@ public class RequiresAuthAspect {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido");
             return null;
         }
-
         try {
-
             request.setAttribute("userEmail", userResponse.getEmail());
             request.setAttribute("userRoles", userResponse.getRolesList());
             request.setAttribute("username", userResponse.getUsername());
             request.setAttribute("phoneNumber", userResponse.getPhoneNumber());
-
             return joinPoint.proceed();
         } catch (Exception e) {
             logger.error("Erro ao validar token para a requisição: " + request.getRequestURI(), e);
