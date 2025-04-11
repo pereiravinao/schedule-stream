@@ -27,9 +27,9 @@ public class GrpcClientConfig {
                 .enableRetry()
                 .maxRetryAttempts(3)
                 .retryBufferSize(16777216) // 16MB
-                .keepAliveWithoutCalls(true)
-                .keepAliveTime(30, TimeUnit.SECONDS)
-                .keepAliveTimeout(10, TimeUnit.SECONDS)
+                .keepAliveWithoutCalls(false)
+                .keepAliveTime(60, TimeUnit.SECONDS)
+                .keepAliveTimeout(20, TimeUnit.SECONDS)
                 .build();
     }
 
